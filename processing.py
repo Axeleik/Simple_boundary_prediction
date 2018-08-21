@@ -87,9 +87,9 @@ def crop_blocks(big_blocks_array, window_size=80, stride=40, save_path = "../arr
                 for count2 in np.arange(parts_dim2):
                     for count3 in np.arange(parts_dim3):
 
-                        array_small_blocks.append(big_block[count1 * stride : window_size + count1 * stride,
-                                                   count2 * stride : window_size + count2 * stride,
-                                                   count3 * stride : window_size + count3 * stride])
+                        array_small_blocks.append(big_block[int(count1) * stride : window_size + int(count1) * stride,
+                                                   int(count2) * stride : window_size + int(count2) * stride,
+                                                   int(count3) * stride : window_size + int(count3) * stride])
 
 
         print("saving to {}".format(save_path))
@@ -112,11 +112,12 @@ def load_crop_split_save_raw_gt(paths_dict):
             os.path.exists(val_folder + "raw_val.npy") and \
             os.path.exists(val_folder + "gt_val.npy"):
 
+        print("Cropped blocks already exist, loading...")
         cropped_array = [np.load(train_folder + "raw_train.npy"),
                          np.load(train_folder + "gt_train.npy"),
                          np.load(val_folder + "raw_val.npy"),
                          np.load(val_folder + "gt_val.npy")]
-
+        print("loaded")
         return cropped_array
 
 
@@ -125,8 +126,11 @@ def load_crop_split_save_raw_gt(paths_dict):
         raw_folder_path = os.path.join(paths_dict["blocks_folder_path"], paths_dict["raw_folder"])
         gt_folder_path = os.path.join(paths_dict["blocks_folder_path"], paths_dict["gt_folder"])
 
+        print("loading all blocks")
         raw_blocks_all = load_all_blocks(raw_folder_path)
         gt_blocks_all_labeled = load_all_blocks(gt_folder_path)
+
+        print("extracting boundaries from gt")
         gt_blocks_all = list(map(lambda x: extract_boundaries(x), gt_blocks_all_labeled))
 
 
@@ -137,11 +141,12 @@ def load_crop_split_save_raw_gt(paths_dict):
             os.makedirs(val_folder)
 
 
-        raw_train = raw_blocks_all[:int(len(raw_blocks_all))]
-        gt_train = gt_blocks_all[:int(len(gt_blocks_all))]
-        raw_val = raw_blocks_all[int(len(raw_blocks_all)):]
-        gt_val = gt_blocks_all[int(len(gt_blocks_all)):]
+        raw_train = raw_blocks_all[:int(len(raw_blocks_all)/2)]
+        gt_train = gt_blocks_all[:int(len(gt_blocks_all)/2)]
+        raw_val = raw_blocks_all[int(len(raw_blocks_all)/2):]
+        gt_val = gt_blocks_all[int(len(gt_blocks_all)/2):]
 
+        print("cropping all blocks...")
         cropped_array = [crop_blocks(raw_train, save_path = train_folder + "raw_train.npy"),
                          crop_blocks(gt_train, save_path = train_folder + "gt_train.npy"),
                          crop_blocks(raw_val, save_path = val_folder + "raw_val.npy"),

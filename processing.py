@@ -106,19 +106,31 @@ def load_crop_split_save_raw_gt(paths_dict):
 
     train_folder = os.path.join(paths_dict["project_folder"], "train/")
     val_folder = os.path.join(paths_dict["project_folder"], "val/")
+    test_folder = os.path.join(paths_dict["project_folder"], "test/")
 
     if os.path.exists(train_folder + "raw_train.npy") and \
             os.path.exists(train_folder + "gt_train.npy") and \
             os.path.exists(val_folder + "raw_val.npy") and \
-            os.path.exists(val_folder + "gt_val.npy"):
+            os.path.exists(val_folder + "gt_val.npy") and \
+            os.path.exists(test_folder + "gt_test.npy") and \
+            os.path.exists(test_folder + "gt_test.npy"):
 
         print("Cropped blocks already exist, loading...")
-        cropped_array = [np.load(train_folder + "raw_train.npy"),
-                         np.load(train_folder + "gt_train.npy"),
-                         np.load(val_folder + "raw_val.npy"),
-                         np.load(val_folder + "gt_val.npy")]
-        print("loaded")
-        return cropped_array
+
+        print("loading raw_train...")
+        raw_train = np.load(train_folder + "raw_train.npy")
+        print("loading gt_train...")
+        gt_train = np.load(train_folder + "gt_train.npy")
+        print("loading raw_val...")
+        raw_val = np.load(val_folder + "raw_val.npy")
+        print("loading gt_val...")
+        gt_val = np.load(val_folder + "gt_val.npy")
+        print("loading raw_test...")
+        raw_test = np.load(test_folder + "raw_test.npy")
+        print("loading gt_test...")
+        gt_test = np.load(test_folder + "gt_test.npy")
+        return [raw_train, gt_train, raw_val, gt_val, raw_test, gt_test]
+
 
 
     else:
@@ -130,6 +142,8 @@ def load_crop_split_save_raw_gt(paths_dict):
         raw_blocks_all = load_all_blocks(raw_folder_path)
         gt_blocks_all_labeled = load_all_blocks(gt_folder_path)
 
+        assert(len(raw_blocks_all)==len(gt_blocks_all_labeled)), "we need same number of raw and gt blocks"
+
         print("extracting boundaries from gt")
         gt_blocks_all = list(map(lambda x: extract_boundaries(x), gt_blocks_all_labeled))
 
@@ -139,18 +153,24 @@ def load_crop_split_save_raw_gt(paths_dict):
             os.makedirs(train_folder)
         if not os.path.exists(val_folder):
             os.makedirs(val_folder)
+        if not os.path.exists(test_folder):
+            os.makedirs(test_folder)
 
 
         raw_train = raw_blocks_all[:int(len(raw_blocks_all)/2)]
         gt_train = gt_blocks_all[:int(len(gt_blocks_all)/2)]
-        raw_val = raw_blocks_all[int(len(raw_blocks_all)/2):]
-        gt_val = gt_blocks_all[int(len(gt_blocks_all)/2):]
+        raw_val = raw_blocks_all[int(len(raw_blocks_all)/2): int(len(raw_blocks_all)/4)*3]
+        gt_val = gt_blocks_all[int(len(gt_blocks_all)/2): int(len(gt_blocks_all)/4)*3]
+        raw_test = raw_blocks_all[int(len(raw_blocks_all) / 4) * 3:]
+        gt_test = gt_blocks_all[int(len(gt_blocks_all) / 4) * 3:]
 
         print("cropping all blocks...")
-        cropped_array = [crop_blocks(raw_train, save_path = train_folder + "raw_train.npy"),
-                         crop_blocks(gt_train, save_path = train_folder + "gt_train.npy"),
-                         crop_blocks(raw_val, save_path = val_folder + "raw_val.npy"),
-                         crop_blocks(gt_val, save_path = val_folder + "gt_val.npy")]
+        cropped_array = [crop_blocks(raw_train, save_path=train_folder + "raw_train.npy"),
+                         crop_blocks(gt_train, save_path=train_folder + "gt_train.npy"),
+                         crop_blocks(raw_val, save_path=val_folder + "raw_val.npy"),
+                         crop_blocks(gt_val, save_path=val_folder + "gt_val.npy"),
+                         crop_blocks(raw_test, save_path=test_folder + "gt_test.npy"),
+                         crop_blocks(gt_test, save_path=test_folder + "gt_test.npy")]
 
         return cropped_array
 

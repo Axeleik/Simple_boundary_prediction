@@ -170,7 +170,7 @@ if __name__ == "__main__":
     parser.add_argument('--stride', type=int, default=int(40))
     parser.add_argument('--clear', type=bool, default=False)
     parser.add_argument('--max_train_epochs', type=int, default=int(15))
-    
+
     args = parser.parse_args()
 
 
@@ -185,5 +185,10 @@ if __name__ == "__main__":
         "batch_size_train": 1,
         "batch_size_val": 1,
         "max_train_epochs": args.max_train_epochs}
+
+    print("Starting...")
+    print("Working with window_size {}, stride {}, and a maximum train epochs of {}".format(config_dict["window_size"],
+                                                                                            config_dict["stride"],
+                                                                                            config_dict["max_train_epochs"]))
 
     main(config_dict)

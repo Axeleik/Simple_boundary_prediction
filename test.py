@@ -38,8 +38,20 @@ def load_sample_arrays(path = "../one_array_raw_gt.npy"):
 
     return np.load(path)
 
+d
+
 if __name__ == "__main__":
     raw, gt = load_sample_arrays()
+
+    raw_array= [raw for i in range(5)]
+    gt_array = [gt for i in range(5)]
+
+    from blocks_dataset import blocksdataset
+    from torch.utils.data import DataLoader
+
+    data = blocksdataset(raw_array, gt_array)
+
+    loader=DataLoader(data,batch_size=4,shuffle=True)
     test_model_parameters()
 
 

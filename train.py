@@ -6,40 +6,46 @@ import processing
 #weights=93662856
 #weights.dtype=torch.float32
 
-def main(paths_dict):
+def main(config_dict):
 
     import torch.optim as optim
     import torch.nn as nn
-    raw_train, gt_train, raw_val, gt_val, _, _ = processing.load_crop_split_save_raw_gt(paths_dict)
+    raw_train, gt_train, raw_val, gt_val, _, _ = processing.load_crop_split_save_raw_gt(config_dict)
 
-    U_net3D = load_Unet3D(paths_dict)
+    U_net3D = load_Unet3D(config_dict)
 
-    criterion, optimizer = get_criterion_and_optimizer(U_net3D, paths_dict)
+    criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
-
+    trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
+    valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], shuffle=False)
 
 
     print("test")
 
 
 
-def load_Unet3D(paths_dict):
+def load_Unet3D(config_dict):
     """
     loads Unet3D with from neurofire
     :param paths_dict: dictionary with all important paths
     :return: Unet3D model
     """
+
+    import torch
     import neurofire.models as models
     from inferno.utils.io_utils import yaml2dict
 
 
-    config = yaml2dict(paths_dict["train_config_folder"])
+    config = yaml2dict(config_dict["train_config_folder"])
     model_name = config.get('model_name')
     model = getattr(models, model_name)(**config.get('model_kwargs'))
 
+    if torch.cuda.is_available():
+        model.cuda()
+
     return model
 
-def get_criterion_and_optimizer(net, paths_dict):
+def get_criterion_and_optimizer(net, config_dict):
     """
     Initializes criterion and optimizer for net
     :param net: NeuralNet
@@ -53,19 +59,87 @@ def get_criterion_and_optimizer(net, paths_dict):
 
     criterion = nn.CrossEntropyLoss()
 
-    config = yaml2dict(paths_dict["train_config_folder"])
+    config = yaml2dict(config_dict["train_config_folder"])
     optimizer_kwargs = config.get('training_optimizer_kwargs')
 
     optimizer = optim.SGD(net.parameters(), lr=optimizer_kwargs.get('lr'), weight_decay=optimizer_kwargs.get('weight_decay'))
 
     return criterion, optimizer
 
+def build_loader(raw, gt, batch_size=1, shuffle=True):
+    """
+
+    :param raw: list with raw_arrays
+    :param gt: list with gt_arrays
+    :param batch_size: size of batch
+    :param shuffle: draw random each time
+    :return: dataloader
+    """
+
+    from blocks_dataset import blocksdataset
+    from torch.utils.data import DataLoader
+
+    data = blocksdataset(raw, gt)
+
+    return DataLoader(data, batch_size=batch_size, shuffle=shuffle)
+
+def sorensen_dice_metric(prediction, target, eps=1e-6):
+    """
+    Computed the sorensen dice metric for validation
+    :param prediction: predicted boundary image
+    :param target: gt boundary image
+    :param eps: min eps, so we do not divide by 0
+    :return: metric score
+    """
+
+    assert prediction.size() == target.size()
+    numerator = (prediction * target).sum()
+    denominator = (prediction * prediction).sum() + (target * target).sum()
+
+    return -2. * (numerator / denominator.clamp(min=eps))
+
+def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
+
+
+    print("Start training!")
+
+    for epoch in range(config_dict["epoch_number"]):  # loop over the dataset multiple times
+
+        running_loss = 0.0
+
+        for i, data in enumerate(trainloader, 0):
+
+            raw, gt = data
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = net(raw)
+            loss = criterion(outputs, gt)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+            if i % 2000 == 1999:  # print every 2000 mini-batches
+                print('[%d, %5d] loss: %.3f' %
+                      (epoch + 1, i + 1, running_loss / 2000))
+                running_loss = 0.0
+
+    print('Finished Training')
+
+
 if __name__ == "__main__":
 
-    paths_dict = {"blocks_folder_path": "../fib25_blocks",
+    config_dict = {"blocks_folder_path": "../fib25_blocks",
     "raw_folder": "raw",
     "gt_folder": "gt",
     "project_folder": "../",
-    "train_config_folder": "train_config.yml"}
+    "train_config_folder": "train_config.yml",
+    "batch_size_train": 1,
+    "batch_size_val": 1,
+    "epoch_number": 10,
+    "save_path": "../trained_model.torch"}
 
-    main(paths_dict)
+    main(config_dict)

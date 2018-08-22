@@ -99,14 +99,14 @@ def crop_blocks(big_blocks_array, window_size=80, stride=40, save_path = "../arr
         return np.array(array_small_blocks)
 
 
-def load_crop_split_save_raw_gt(paths_dict):
+def load_crop_split_save_raw_gt(config_dict):
 
     import numpy as np
     import os
 
-    train_folder = os.path.join(paths_dict["project_folder"], "train/")
-    val_folder = os.path.join(paths_dict["project_folder"], "val/")
-    test_folder = os.path.join(paths_dict["project_folder"], "test/")
+    train_folder = os.path.join(config_dict["project_folder"], "train/")
+    val_folder = os.path.join(config_dict["project_folder"], "val/")
+    test_folder = os.path.join(config_dict["project_folder"], "test/")
 
     if os.path.exists(train_folder + "raw_train.npy") and \
             os.path.exists(train_folder + "gt_train.npy") and \
@@ -135,8 +135,8 @@ def load_crop_split_save_raw_gt(paths_dict):
 
     else:
 
-        raw_folder_path = os.path.join(paths_dict["blocks_folder_path"], paths_dict["raw_folder"])
-        gt_folder_path = os.path.join(paths_dict["blocks_folder_path"], paths_dict["gt_folder"])
+        raw_folder_path = os.path.join(config_dict["blocks_folder_path"], config_dict["raw_folder"])
+        gt_folder_path = os.path.join(config_dict["blocks_folder_path"], config_dict["gt_folder"])
 
         print("loading all blocks")
         raw_blocks_all = load_all_blocks(raw_folder_path)

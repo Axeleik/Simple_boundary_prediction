@@ -34,3 +34,4 @@ class SorensenDiceLoss(nn.Module):
         loss = -2. * (numerator / denominator.clamp(min=self.eps))
 
         return loss
+

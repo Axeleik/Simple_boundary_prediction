@@ -179,7 +179,7 @@ def load_crop_split_save_raw_gt(config_dict):
                                      save_path=val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
                                      clear=clear),
                          crop_blocks(raw_test, config_dict,
-                                     save_path=test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     save_path=test_folder + "raw_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
                                      clear=clear),
                          crop_blocks(gt_test, config_dict,
                                      save_path=test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),

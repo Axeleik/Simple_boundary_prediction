@@ -47,7 +47,7 @@ def extract_boundaries(img, connectivity=3):
 
     return find_boundaries(img, connectivity=connectivity).astype("int8")
 
-def crop_blocks(big_blocks_array, window_size=80, stride=40, save_path = "../array_small_blocks.npy"):
+def crop_blocks(big_blocks_array, config_file, save_path = "../array_small_blocks.npy", clear=False):
     """
     Crops blocks for training
     :param big_blocks_array: list with blocks to crop
@@ -59,50 +59,46 @@ def crop_blocks(big_blocks_array, window_size=80, stride=40, save_path = "../arr
     import numpy as np
     import os
 
-    if os.path.exists(save_path):
-
-        print("{} exists, loading...".format(save_path))
-        array_small_blocks = np.load(save_path)
-        print("loaded")
-
-        return array_small_blocks
-
-    else:
-
-        array_small_blocks=[]
-
-        for block_idx, big_block in enumerate(big_blocks_array):
-
-            print("Cropping block {}".format(block_idx))
-
-            dim1, dim2, dim3 = big_block.shape
-
-            parts_dim1, parts_dim2, parts_dim3 = (dim1 - window_size)/stride+1, (dim2 - window_size)/stride+1, (dim3 - window_size)/stride+1
-
-            assert(parts_dim1.is_integer()), "Dimension 1 does does not match window_size and stride"
-            assert(parts_dim2.is_integer()), "Dimension 2 does does not match window_size and stride"
-            assert(parts_dim3.is_integer()), "Dimension 3 does does not match window_size and stride"
-
-            for count1 in np.arange(parts_dim1):
-                for count2 in np.arange(parts_dim2):
-                    for count3 in np.arange(parts_dim3):
-
-                        array_small_blocks.append(big_block[int(count1) * stride : window_size + int(count1) * stride,
-                                                   int(count2) * stride : window_size + int(count2) * stride,
-                                                   int(count3) * stride : window_size + int(count3) * stride])
+    window_size, stride = config_file.get("window_size", default=80), config_file.get("stride", default=40)
 
 
-        print("saving to {}".format(save_path))
-        np.save(save_path, array_small_blocks)
-        print("saved")
+    array_small_blocks=[]
 
-        return np.array(array_small_blocks)
+    for block_idx, big_block in enumerate(big_blocks_array):
+
+        print("Cropping block {}".format(block_idx))
+
+        dim1, dim2, dim3 = big_block.shape
+
+        parts_dim1, parts_dim2, parts_dim3 = (dim1 - window_size)/stride+1, (dim2 - window_size)/stride+1, (dim3 - window_size)/stride+1
+
+        assert(parts_dim1.is_integer()), "Dimension 1 does does not match window_size and stride"
+        assert(parts_dim2.is_integer()), "Dimension 2 does does not match window_size and stride"
+        assert(parts_dim3.is_integer()), "Dimension 3 does does not match window_size and stride"
+
+        for count1 in np.arange(parts_dim1):
+            for count2 in np.arange(parts_dim2):
+                for count3 in np.arange(parts_dim3):
+
+                    array_small_blocks.append(big_block[int(count1) * stride : window_size + int(count1) * stride,
+                                               int(count2) * stride : window_size + int(count2) * stride,
+                                               int(count3) * stride : window_size + int(count3) * stride])
 
 
-def load_crop_split_save_raw_gt(config_dict):
+    print("saving to {}".format(save_path))
+    np.save(save_path, array_small_blocks)
+    print("saved")
+
+    return np.array(array_small_blocks)
+
+
+def load_crop_split_save_raw_gt(config_dict, clear=False):
 
     import numpy as np
     import os
+
+    if clear:
+        print("clearing blocks...")
 
     train_folder = os.path.join(config_dict["project_folder"], "train/")
     val_folder = os.path.join(config_dict["project_folder"], "val/")
@@ -113,7 +109,7 @@ def load_crop_split_save_raw_gt(config_dict):
             os.path.exists(val_folder + "raw_val.npy") and \
             os.path.exists(val_folder + "gt_val.npy") and \
             os.path.exists(test_folder + "gt_test.npy") and \
-            os.path.exists(test_folder + "gt_test.npy"):
+            os.path.exists(test_folder + "gt_test.npy") and not clear:
 
         print("Cropped blocks already exist, loading...")
 
@@ -165,12 +161,12 @@ def load_crop_split_save_raw_gt(config_dict):
         gt_test = gt_blocks_all[int(len(gt_blocks_all) / 4) * 3:]
 
         print("cropping all blocks...")
-        cropped_array = [crop_blocks(raw_train, save_path=train_folder + "raw_train.npy"),
-                         crop_blocks(gt_train, save_path=train_folder + "gt_train.npy"),
-                         crop_blocks(raw_val, save_path=val_folder + "raw_val.npy"),
-                         crop_blocks(gt_val, save_path=val_folder + "gt_val.npy"),
-                         crop_blocks(raw_test, save_path=test_folder + "gt_test.npy"),
-                         crop_blocks(gt_test, save_path=test_folder + "gt_test.npy")]
+        cropped_array = [crop_blocks(raw_train, config_dict, save_path=train_folder + "raw_train.npy", clear=clear),
+                         crop_blocks(gt_train, config_dict, save_path=train_folder + "gt_train.npy", clear=clear),
+                         crop_blocks(raw_val, config_dict, save_path=val_folder + "raw_val.npy", clear=clear),
+                         crop_blocks(gt_val, config_dict, save_path=val_folder + "gt_val.npy", clear=clear),
+                         crop_blocks(raw_test, config_dict, save_path=test_folder + "gt_test.npy", clear=clear),
+                         crop_blocks(gt_test, config_dict, save_path=test_folder + "gt_test.npy", clear=clear)]
 
         return cropped_array
 

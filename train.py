@@ -2,9 +2,6 @@ import os
 import processing
 
 
-#6912 blocks
-#weights=93662856
-#weights.dtype=torch.float32
 
 def main(config_dict):
 
@@ -99,9 +96,25 @@ def sorensen_dice_metric(prediction, target, eps=1e-6):
     return -2. * (numerator / denominator.clamp(min=eps))
 
 def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
+    """
+    Trains the NeuralNet and saves the one with the best validation score
+    :param config_dict: dict with configs
+    :param net: NeuralNet
+    :param criterion: criterion for NN
+    :param optimizer: optimizer for NN
+    :param trainloader: dataloader with traind ata
+    :param valloader: dataloader with validation data
+    """
 
+    import torch
+
+    model_folder = os.path.join(config_dict["project_folder"], "model/")
+    if not os.path.exists(model_folder):
+        os.mkdir(model_folder)
 
     print("Start training!")
+
+    best_val=0
 
     for epoch in range(config_dict["epoch_number"]):  # loop over the dataset multiple times
 
@@ -122,10 +135,29 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             # print statistics
             running_loss += loss.item()
-            if i % 2000 == 1999:  # print every 2000 mini-batches
+            if i % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
+
+        #validation
+        val_accumulated = 0.0
+
+        for i, data in enumerate(valloader, 0):
+            raw, gt = data
+            outputs = net(raw)
+            val_accumulated += sorensen_dice_metric(outputs, gt)
+
+        print("Validation score after epoch {}: {}".format(epoch, val_accumulated))
+
+        #save if better than best val score
+        if val_accumulated>best_val:
+
+            print("New best validation score: {}".format(val_accumulated))
+            print("saving to ", model_folder + "best_model.torch")
+
+            best_val=val_accumulated
+            torch.save(net, model_folder + "best_model.torch")
 
     print('Finished Training')
 
@@ -139,7 +171,6 @@ if __name__ == "__main__":
     "train_config_folder": "train_config.yml",
     "batch_size_train": 1,
     "batch_size_val": 1,
-    "epoch_number": 10,
-    "save_path": "../trained_model.torch"}
+    "epoch_number": 10}
 
     main(config_dict)

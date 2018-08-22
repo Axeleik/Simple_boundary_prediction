@@ -31,7 +31,7 @@ class SorensenDiceLoss(nn.Module):
         assert input.size() == target.size()
         numerator = (input * target).sum()
         denominator = (input * input).sum() + (target * target).sum()
-        loss = -2. * (numerator / denominator.clamp(min=self.eps))
+        loss = 2. * (numerator / denominator.clamp(min=self.eps))
 
         return loss
 

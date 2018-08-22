@@ -59,7 +59,7 @@ def crop_blocks(big_blocks_array, config_file, save_path = "../array_small_block
     import numpy as np
     import os
 
-    window_size, stride = config_file.get("window_size", default=80), config_file.get("stride", default=40)
+    window_size, stride = config_file["window_size"], config_file["stride"]
 
 
     array_small_blocks=[]

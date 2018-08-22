@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9a81f85-bad8-4990-a1b2-0938ce5c76dd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing.py" afterDir="false" />
-    </list>
+    <list default="true" id="f9a81f85-bad8-4990-a1b2-0938ce5c76dd" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,8 +55,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/processing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2179">
-              <caret line="171" column="26" lean-forward="true" selection-start-line="171" selection-start-column="26" selection-end-line="171" selection-end-column="26" />
+            <state relative-caret-position="161">
+              <caret line="168" column="25" selection-start-line="168" selection-start-column="25" selection-end-line="168" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -427,8 +425,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/processing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2179">
-          <caret line="171" column="26" lean-forward="true" selection-start-line="171" selection-start-column="26" selection-end-line="171" selection-end-column="26" />
+        <state relative-caret-position="161">
+          <caret line="168" column="25" selection-start-line="168" selection-start-column="25" selection-end-line="168" selection-end-column="25" />
         </state>
       </provider>
     </entry>

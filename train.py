@@ -164,13 +164,13 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
 if __name__ == "__main__":
 
-    config_dict = {"blocks_folder_path": "../fib25_blocks",
-    "raw_folder": "raw",
-    "gt_folder": "gt",
+    config_dict = {
     "project_folder": "../",
+    "raw_folder": "fib25_blocks/raw/",
+    "gt_folder": "fib25_blocks/gt/",
     "train_config_folder": "train_config.yml",
     "batch_size_train": 1,
     "batch_size_val": 1,
-    "epoch_number": 10}
+    "epoch_number": 15}
 
     main(config_dict)

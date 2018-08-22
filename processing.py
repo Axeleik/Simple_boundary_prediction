@@ -131,8 +131,8 @@ def load_crop_split_save_raw_gt(config_dict, clear=False):
 
     else:
 
-        raw_folder_path = os.path.join(config_dict["blocks_folder_path"], config_dict["raw_folder"])
-        gt_folder_path = os.path.join(config_dict["blocks_folder_path"], config_dict["gt_folder"])
+        raw_folder_path = os.path.join(config_dict["project_folder"], config_dict["raw_folder"])
+        gt_folder_path = os.path.join(config_dict["project_folder"], config_dict["gt_folder"])
 
         print("loading all blocks")
         raw_blocks_all = load_all_blocks(raw_folder_path)

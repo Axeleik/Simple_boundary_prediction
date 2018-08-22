@@ -5,7 +5,7 @@ model_kwargs:
   out_channels: 12
   initial_num_fmaps: 12
   fmap_growth: 5
-  scale_factor: [[1, 2, 2], 2, 2]
+  scale_factor: [[2, 2, 2], 2, 2]
   final_activation: Sigmoid
   conv_type_key: 'vanilla'
 

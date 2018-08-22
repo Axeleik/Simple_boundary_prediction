@@ -92,11 +92,16 @@ def crop_blocks(big_blocks_array, config_file, save_path = "../array_small_block
     return np.array(array_small_blocks)
 
 
-def load_crop_split_save_raw_gt(config_dict, clear=False):
-
+def load_crop_split_save_raw_gt(config_dict):
+    """
+    wrapper for loading, splitting, cropping, saving data
+    :param config_dict: configuration dict with all paths and configs
+    :return: array with all train, val and test datasets
+    """
     import numpy as np
     import os
 
+    clear = config_dict.get("clear", False)
     if clear:
         print("clearing blocks...")
 

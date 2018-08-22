@@ -4,27 +4,27 @@ import processing
 
 
 def main(config_dict):
+    """
+    main function (wrapper) for loading data (cropping, splitting) -> training
+    :param config_dict: config
+    """
 
-    import torch.optim as optim
-    import torch.nn as nn
     raw_train, gt_train, raw_val, gt_val, _, _ = processing.load_crop_split_save_raw_gt(config_dict)
-
-    U_net3D = load_Unet3D(config_dict)
-
-    criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
     trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
     valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], shuffle=False)
 
+    U_net3D = load_Unet3D(config_dict)
+    criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
-    print("test")
+    train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
 
 
 def load_Unet3D(config_dict):
     """
     loads Unet3D with from neurofire
-    :param paths_dict: dictionary with all important paths
+    :param config_dict: dictionary with all important paths
     :return: Unet3D model
     """
 
@@ -46,7 +46,7 @@ def get_criterion_and_optimizer(net, config_dict):
     """
     Initializes criterion and optimizer for net
     :param net: NeuralNet
-    :param paths_dict: dictionary with all important paths
+    :param config_dict: dictionary with all important paths
     :return: criterion and optimizer
     """
 
@@ -116,7 +116,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
     best_val=0
 
-    for epoch in range(config_dict["epoch_number"]):  # loop over the dataset multiple times
+    for epoch in range(config_dict["max_train_epochs"]):  # loop over the dataset multiple times
 
         running_loss = 0.0
 
@@ -163,14 +163,27 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--window_size', type=int, default=int(80))
+    parser.add_argument('--stride', type=int, default=int(40))
+    parser.add_argument('--clear', type=bool, default=False)
+    parser.add_argument('--max_train_epochs', type=int, default=int(15))
+    
+    args = parser.parse_args()
+
 
     config_dict = {
-    "project_folder": "../",
-    "raw_folder": "fib25_blocks/raw/",
-    "gt_folder": "fib25_blocks/gt/",
-    "train_config_folder": "train_config.yml",
-    "batch_size_train": 1,
-    "batch_size_val": 1,
-    "epoch_number": 15}
+        "project_folder": "/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/",
+        "clear": args.clear,
+        "raw_folder": "fib25_blocks/raw/",
+        "gt_folder": "fib25_blocks/gt/",
+        "train_config_folder": "train_config.yml",
+        "window_size": args.window_size,
+        "stride": args.stride,
+        "batch_size_train": 1,
+        "batch_size_val": 1,
+        "max_train_epochs": args.max_train_epochs}
 
     main(config_dict)

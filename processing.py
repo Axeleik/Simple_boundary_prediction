@@ -109,27 +109,27 @@ def load_crop_split_save_raw_gt(config_dict):
     val_folder = os.path.join(config_dict["project_folder"], "val/")
     test_folder = os.path.join(config_dict["project_folder"], "test/")
 
-    if os.path.exists(train_folder + "raw_train.npy") and \
-            os.path.exists(train_folder + "gt_train.npy") and \
-            os.path.exists(val_folder + "raw_val.npy") and \
-            os.path.exists(val_folder + "gt_val.npy") and \
-            os.path.exists(test_folder + "gt_test.npy") and \
-            os.path.exists(test_folder + "gt_test.npy") and not clear:
+    if os.path.exists(train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and \
+            os.path.exists(train_folder + "gt_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and \
+            os.path.exists(val_folder + "raw_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and \
+            os.path.exists(val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and \
+            os.path.exists(test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and \
+            os.path.exists(test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"])) and not clear:
 
         print("Cropped blocks already exist, loading...")
 
         print("loading raw_train...")
-        raw_train = np.load(train_folder + "raw_train.npy")
+        raw_train = np.load(train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         print("loading gt_train...")
-        gt_train = np.load(train_folder + "gt_train.npy")
+        gt_train = np.load(train_folder + "gt_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         print("loading raw_val...")
-        raw_val = np.load(val_folder + "raw_val.npy")
+        raw_val = np.load(val_folder + "raw_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         print("loading gt_val...")
-        gt_val = np.load(val_folder + "gt_val.npy")
+        gt_val = np.load(val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         print("loading raw_test...")
-        raw_test = np.load(test_folder + "raw_test.npy")
+        raw_test = np.load(test_folder + "raw_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         print("loading gt_test...")
-        gt_test = np.load(test_folder + "gt_test.npy")
+        gt_test = np.load(test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
         return [raw_train, gt_train, raw_val, gt_val, raw_test, gt_test]
 
 
@@ -166,12 +166,24 @@ def load_crop_split_save_raw_gt(config_dict):
         gt_test = gt_blocks_all[int(len(gt_blocks_all) / 4) * 3:]
 
         print("cropping all blocks...")
-        cropped_array = [crop_blocks(raw_train, config_dict, save_path=train_folder + "raw_train.npy", clear=clear),
-                         crop_blocks(gt_train, config_dict, save_path=train_folder + "gt_train.npy", clear=clear),
-                         crop_blocks(raw_val, config_dict, save_path=val_folder + "raw_val.npy", clear=clear),
-                         crop_blocks(gt_val, config_dict, save_path=val_folder + "gt_val.npy", clear=clear),
-                         crop_blocks(raw_test, config_dict, save_path=test_folder + "gt_test.npy", clear=clear),
-                         crop_blocks(gt_test, config_dict, save_path=test_folder + "gt_test.npy", clear=clear)]
+        cropped_array = [crop_blocks(raw_train, config_dict,
+                                     save_path=train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear),
+                         crop_blocks(gt_train, config_dict,
+                                     save_path=train_folder + "gt_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear),
+                         crop_blocks(raw_val, config_dict,
+                                     save_path=val_folder + "raw_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear),
+                         crop_blocks(gt_val, config_dict,
+                                     save_path=val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear),
+                         crop_blocks(raw_test, config_dict,
+                                     save_path=test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear),
+                         crop_blocks(gt_test, config_dict,
+                                     save_path=test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),
+                                     clear=clear)]
 
         return cropped_array
 

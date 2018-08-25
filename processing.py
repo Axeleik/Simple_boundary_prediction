@@ -45,7 +45,7 @@ def extract_boundaries(img, connectivity=3):
 
     from skimage.segmentation import find_boundaries
 
-    return find_boundaries(img, connectivity=connectivity).astype("int8")
+    return find_boundaries(img, connectivity=connectivity).astype("uint8")
 
 def crop_blocks(big_blocks_array, config_file, save_path = "../array_small_blocks.npy", clear=False):
     """

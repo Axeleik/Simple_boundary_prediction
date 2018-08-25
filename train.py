@@ -9,11 +9,14 @@ def main(config_dict):
     :param config_dict: config
     """
 
+    print("preparing data...")
     raw_train, gt_train, raw_val, gt_val, _, _ = processing.load_crop_split_save_raw_gt(config_dict)
 
+    print("preparing loaders...")
     trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
     valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], shuffle=False)
 
+    print("preparing Unet3D")
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 

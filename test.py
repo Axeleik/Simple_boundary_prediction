@@ -4,6 +4,7 @@
 from torch.nn.modules.module import _addindent
 import torch
 import numpy as np
+from processing import extract_boundaries
 
 def test_model_parameters():
     from train import load_Unet3D
@@ -32,7 +33,7 @@ def extract_one_small_array():
 
     np.save("../../to_copy/one_array_raw_gt.npy",(raw_train[0],gt_train[0]))
 
-def load_sample_arrays(path = "../one_array_raw_gt.npy"):
+def load_sample_arrays(path = "/HDD/embl/fib25_blocks/one_array_raw_gt.npy"):
 
     #has to be converted to float32 and divided by 255
 
@@ -43,15 +44,19 @@ def load_sample_arrays(path = "../one_array_raw_gt.npy"):
 if __name__ == "__main__":
     raw, gt = load_sample_arrays()
 
-    raw_array= [raw for i in range(5)]
-    gt_array = [gt for i in range(5)]
+    raw_array= np.array([raw for i in range(5)])
+    gt_array = np.array([gt for i in range(5)])
+    gt_blocks_all = list(map(lambda x: extract_boundaries(x), gt_array))
 
     from blocks_dataset import blocksdataset
     from torch.utils.data import DataLoader
 
-    data = blocksdataset(raw_array, gt_array)
+    data = blocksdataset(raw_array, gt_blocks_all)
 
     loader=DataLoader(data,batch_size=1,shuffle=True)
+
+    for i, data in enumerate(loader, 0):
+        print("hi")
     test_model_parameters()
 
 

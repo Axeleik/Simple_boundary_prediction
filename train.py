@@ -16,7 +16,7 @@ def main(config_dict):
     trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
     valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], shuffle=False)
 
-    print("preparing Unet3D")
+    print("preparing Unet3D...")
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
@@ -131,7 +131,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(raw).unsqueeze(dim=0)
+            outputs = net(raw)
             loss = criterion(outputs, gt)
             loss.backward()
             optimizer.step()

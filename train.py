@@ -142,6 +142,10 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             # print statistics
             running_loss += loss.item()
+
+            if config_dict["debug"]:
+                print("Loss: ",loss.item())
+
             if i % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 2000))
@@ -177,6 +181,7 @@ if __name__ == "__main__":
     parser.add_argument('--stride', type=int, default=int(40))
     parser.add_argument('--clear', type=bool, default=False)
     parser.add_argument('--max_train_epochs', type=int, default=int(15))
+    parser.add_argument('--debug', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -191,7 +196,8 @@ if __name__ == "__main__":
         "stride": args.stride,
         "batch_size_train": 1,
         "batch_size_val": 1,
-        "max_train_epochs": args.max_train_epochs}
+        "max_train_epochs": args.max_train_epochs,
+        "debug": args.debug}
 
     print("Starting...")
     print("Working with window_size {}, stride {}, and a maximum train epochs of {}".format(config_dict["window_size"],

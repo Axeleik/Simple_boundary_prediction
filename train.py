@@ -131,7 +131,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(raw)
+            outputs = net(raw).unsqueeze(dim=0)
             loss = criterion(outputs, gt)
             loss.backward()
             optimizer.step()

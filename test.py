@@ -5,7 +5,7 @@ from torch.nn.modules.module import _addindent
 import torch
 import numpy as np
 from processing import extract_boundaries
-from train import load_Unet3D
+from train import load_Unet3D, get_criterion_and_optimizer
 
 def test_model_parameters():
     from train import load_Unet3D
@@ -79,10 +79,14 @@ if __name__ == "__main__":
     data = blocksdataset(raw_array, gt_blocks_all)
     model = load_Unet3D(config_dict)
     loader = DataLoader(data,batch_size=1,shuffle=True)
+    criterion, optimizer = get_criterion_and_optimizer(model, config_dict)
 
     for i, data in enumerate(loader, 0):
-        result = model(data[0])
-
+        raw, gt = data
+        outputs = model(raw)
+        loss = criterion(outputs, gt)
+        loss.backward()
+        optimizer.step()
     test_model_parameters()
 
 

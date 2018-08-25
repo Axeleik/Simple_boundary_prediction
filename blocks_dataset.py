@@ -34,4 +34,4 @@ class blocksdataset(Dataset):
             raw = raw.cuda()
             gt = gt.cuda()
 
-        return raw.unsqueeze(dim=0), gt.unsqueeze(dim=0)
+        return raw.unsqueeze(dim=0), gt

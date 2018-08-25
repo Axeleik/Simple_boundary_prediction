@@ -172,6 +172,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             best_val = val_accumulated
             torch.save(net, model_folder + "best_model.torch")
 
+    print("saving last model...")
+    torch.save(net, model_folder + "last_model.torch")
     print('Finished Training')
 
 

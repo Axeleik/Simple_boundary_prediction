@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     data = blocksdataset(raw_array, gt_blocks_all)
 
-    loader=DataLoader(data,batch_size=1,shuffle=True)
+    loader = DataLoader(data,batch_size=1,shuffle=True)
 
     for i, data in enumerate(loader, 0):
         print("hi")

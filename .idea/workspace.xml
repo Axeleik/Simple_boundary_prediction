@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9a81f85-bad8-4990-a1b2-0938ce5c76dd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-    </list>
+    <list default="true" id="f9a81f85-bad8-4990-a1b2-0938ce5c76dd" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,6 +131,8 @@
       <find>folder_path</find>
       <find>dict</find>
       <find>.get</find>
+      <find>lamb</find>
+      <find>extra</find>
     </findStrings>
   </component>
   <component name="Git.Settings">

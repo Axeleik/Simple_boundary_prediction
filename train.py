@@ -132,7 +132,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             # forward + backward + optimize
             outputs = net(raw)
-            
+
             print("outputs.size(): ", outputs.size())
             print("gt.size(): ", gt.size())
 

@@ -112,12 +112,14 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
     """
 
     import torch
+    from time import time
 
     model_folder = os.path.join(config_dict["project_folder"], "model/")
     if not os.path.exists(model_folder):
         os.mkdir(model_folder)
 
     print("Start training!")
+    overall_time=time()
 
     best_val=0
 
@@ -148,10 +150,11 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             if config_dict["debug"]:
                 print("Loss: ",loss.item())
 
-            if i % 100 == 0:
+            if (i + 1) % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 2000))
+                      (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
+                print("After {} hours".format((time() - overall_time)/3600))
 
         #validation
         val_accumulated = 0.0

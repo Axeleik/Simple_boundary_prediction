@@ -20,7 +20,8 @@ def main(config_dict):
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
-    train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+    if not config_dict["process_only"]:
+        train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
 
 
@@ -183,6 +184,7 @@ if __name__ == "__main__":
     parser.add_argument('--clear', type=bool, default=False)
     parser.add_argument('--max_train_epochs', type=int, default=int(15))
     parser.add_argument('--debug', type=bool, default=False)
+    parser.add_argument('--process_only', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -198,7 +200,8 @@ if __name__ == "__main__":
         "batch_size_train": 1,
         "batch_size_val": 1,
         "max_train_epochs": args.max_train_epochs,
-        "debug": args.debug}
+        "debug": args.debug,
+        "process_only": args.process_only}
 
     print("Starting...")
     print("Working with window_size {}, stride {}, "

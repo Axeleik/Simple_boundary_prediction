@@ -5,6 +5,7 @@ from torch.nn.modules.module import _addindent
 import torch
 import numpy as np
 from processing import extract_boundaries
+from train import load_Unet3D
 
 def test_model_parameters():
     from train import load_Unet3D
@@ -42,6 +43,30 @@ def load_sample_arrays(path = "/HDD/embl/fib25_blocks/one_array_raw_gt.npy"):
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--window_size', type=int, default=int(80))
+    parser.add_argument('--stride', type=int, default=int(40))
+    parser.add_argument('--clear', type=bool, default=False)
+    parser.add_argument('--max_train_epochs', type=int, default=int(15))
+
+    args = parser.parse_args()
+
+
+    config_dict = {
+        "project_folder": "/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/",
+        "clear": args.clear,
+        "raw_folder": "fib25_blocks/raw/",
+        "gt_folder": "fib25_blocks/gt/",
+        "train_config_folder": "train_config.yml",
+        "window_size": args.window_size,
+        "stride": args.stride,
+        "batch_size_train": 1,
+        "batch_size_val": 1,
+        "max_train_epochs": args.max_train_epochs}
+
+
     raw, gt = load_sample_arrays()
 
     raw_array= np.array([raw for i in range(5)])
@@ -52,11 +77,12 @@ if __name__ == "__main__":
     from torch.utils.data import DataLoader
 
     data = blocksdataset(raw_array, gt_blocks_all)
-
+    model = load_Unet3D(config_dict)
     loader = DataLoader(data,batch_size=1,shuffle=True)
 
     for i, data in enumerate(loader, 0):
-        print("hi")
+        result = model(data[0])
+
     test_model_parameters()
 
 

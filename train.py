@@ -208,5 +208,7 @@ if __name__ == "__main__":
           "and a maximum train epochs of {}".format(config_dict["window_size"],
                                                     config_dict["stride"],
                                                     config_dict["max_train_epochs"]))
+    if config_dict["process_only"]:
+        print("Only data processing")
 
     main(config_dict)

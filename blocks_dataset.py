@@ -19,9 +19,8 @@ class blocksdataset(Dataset):
 
     def __getitem__(self, idx):
 
-
-        raw = torch.tensor(self.raw_list[idx], dtype=torch.float32)
-        gt = torch.tensor(self.gt_list[idx], dtype=torch.float32)
+        raw = torch.tensor(self.raw_list[idx], dtype = torch.float32)
+        gt = torch.tensor(self.gt_list[idx], dtype = torch.float32)
 
         if raw.max()>1 or raw.min()<0:
             raw /= 255
@@ -34,4 +33,4 @@ class blocksdataset(Dataset):
             raw = raw.cuda()
             gt = gt.cuda()
 
-        return raw.unsqueeze(dim=0), gt.unsqueeze(dim=0)
+        return raw.unsqueeze(dim=0), gt

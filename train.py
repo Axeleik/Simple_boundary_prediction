@@ -53,11 +53,11 @@ def get_criterion_and_optimizer(net, config_dict):
     :return: criterion and optimizer
     """
 
-    import torch.nn as nn
     from inferno.utils.io_utils import yaml2dict
     import torch.optim as optim
+    from SorensenDiceLoss import SorensenDiceLoss
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = SorensenDiceLoss()
 
     config = yaml2dict(config_dict["train_config_folder"])
     optimizer_kwargs = config.get('training_optimizer_kwargs')
@@ -131,10 +131,10 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(raw)
+            outputs = net(raw).squeeze(dim=0)
 
-            print("outputs.size(): ", outputs.size())
-            print("gt.size(): ", gt.size())
+            #print("outputs.size(): ", outputs.size())
+            #print("gt.size(): ", gt.size())
 
             loss = criterion(outputs, gt)
             loss.backward()

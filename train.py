@@ -62,7 +62,8 @@ def get_criterion_and_optimizer(net, config_dict):
     config = yaml2dict(config_dict["train_config_folder"])
     optimizer_kwargs = config.get('training_optimizer_kwargs')
 
-    optimizer = optim.SGD(net.parameters(), lr=optimizer_kwargs.get('lr'), weight_decay=optimizer_kwargs.get('weight_decay'))
+    optimizer = optim.SGD(net.parameters(), lr=optimizer_kwargs.get('lr'),
+                          weight_decay=optimizer_kwargs.get('weight_decay'))
 
     return criterion, optimizer
 
@@ -162,12 +163,12 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         print("Validation score after epoch {}: {}".format(epoch, val_accumulated))
 
         #save if better than best val score
-        if val_accumulated>best_val:
+        if val_accumulated > best_val:
 
             print("New best validation score: {}".format(val_accumulated))
             print("saving to ", model_folder + "best_model.torch")
 
-            best_val=val_accumulated
+            best_val = val_accumulated
             torch.save(net, model_folder + "best_model.torch")
 
     print('Finished Training')
@@ -200,8 +201,9 @@ if __name__ == "__main__":
         "debug": args.debug}
 
     print("Starting...")
-    print("Working with window_size {}, stride {}, and a maximum train epochs of {}".format(config_dict["window_size"],
-                                                                                            config_dict["stride"],
-                                                                                            config_dict["max_train_epochs"]))
+    print("Working with window_size {}, stride {}, "
+          "and a maximum train epochs of {}".format(config_dict["window_size"],
+                                                    config_dict["stride"],
+                                                    config_dict["max_train_epochs"]))
 
     main(config_dict)

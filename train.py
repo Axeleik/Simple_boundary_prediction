@@ -184,8 +184,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--window_size', type=int, default=int(80))
-    parser.add_argument('--stride', type=int, default=int(40))
+    parser.add_argument('--window_size', type=int, default=int(160))
+    parser.add_argument('--stride', type=int, default=int(90))
     parser.add_argument('--clear', type=bool, default=False)
     parser.add_argument('--max_train_epochs', type=int, default=int(15))
     parser.add_argument('--debug', type=bool, default=False)

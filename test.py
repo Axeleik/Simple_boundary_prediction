@@ -21,6 +21,64 @@ def test_model_parameters():
 
 # Test
 
+def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
+
+    import torch
+    from time import time
+    import os
+    from train import sorensen_dice_metric
+
+    model_folder = os.path.join(config_dict["project_folder"], "model/")
+    if not os.path.exists(model_folder):
+        os.mkdir(model_folder)
+
+    print("Start training!")
+    overall_time=time()
+
+    best_val=0
+
+    for epoch in range(config_dict["max_train_epochs"]):  # loop over the dataset multiple times
+
+        running_loss = 0.0
+
+        for i, data in enumerate(trainloader, 0):
+
+            raw, gt = data
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = net(raw).squeeze(dim=0)
+
+            print("outputs.size(): ", outputs.size())
+            print("gt.size(): ", gt.size())
+
+            loss = criterion(outputs, gt)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+
+            print("Loss: ",loss.item())
+
+            if i==2:
+                break
+
+        val_accumulated=0.0
+        print("now starting val...")
+        for j, data_val in enumerate(valloader, 0):
+            optimizer.zero_grad()
+            raw, gt = data_val
+            outputs = net(raw).squeeze(dim=0)
+            val_accumulated += sorensen_dice_metric(outputs, gt)
+            del outputs
+            print("val_accumulated: ", val_accumulated)
+            if j==3:
+                assert (1==2),"stop!"
+
+
 def extract_one_small_array():
     import os
 

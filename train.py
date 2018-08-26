@@ -20,6 +20,10 @@ def main(config_dict):
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
+    if config_dict["process_only"] and config_dict["debug"]:
+        from test import do_one_loop
+        do_one_loop(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+
     if not config_dict["process_only"]:
         train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
@@ -159,9 +163,9 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         #validation
         val_accumulated = 0.0
 
-        for i, data in enumerate(valloader, 0):
-            raw, gt = data
-            outputs = net(raw)
+        for j, data_val in enumerate(valloader, 0):
+            raw, gt = data_val
+            outputs = net(raw).squeeze(dim=0)
             val_accumulated += sorensen_dice_metric(outputs, gt)
 
         print("Validation score after epoch {}: {}".format(epoch, val_accumulated))

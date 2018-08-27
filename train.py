@@ -131,6 +131,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
         running_loss = 0.0
 
+        time_epoch=time()
+
         for i, data in enumerate(trainloader, 0):
 
             raw, gt = data
@@ -157,6 +159,9 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
                     print('[%d, %5d] loss: %.3f' %
                           (epoch + 1, i + 1, running_loss / 100))
                     running_loss = 0.0
+
+            if (i+1)%100==0:
+                print("Finished iteration {} in {} min".format(i+1, (time() - time_epoch)/60 ))
 
         #validation
         val_accumulated = 0.0

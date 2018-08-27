@@ -14,7 +14,7 @@ def main(config_dict):
 
     print("preparing loaders...")
     trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
-    valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], shuffle=False)
+    valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], val=True, shuffle=False)
 
     print("preparing Unet3D...")
     U_net3D = load_Unet3D(config_dict)
@@ -72,7 +72,7 @@ def get_criterion_and_optimizer(net, config_dict):
 
     return criterion, optimizer
 
-def build_loader(raw, gt, batch_size=1, shuffle=True):
+def build_loader(raw, gt, batch_size=1, shuffle=True, val=False):
     """
 
     :param raw: list with raw_arrays
@@ -85,7 +85,7 @@ def build_loader(raw, gt, batch_size=1, shuffle=True):
     from blocks_dataset import blocksdataset
     from torch.utils.data import DataLoader
 
-    data = blocksdataset(raw, gt)
+    data = blocksdataset(raw, gt, val=val)
 
     return DataLoader(data, batch_size=batch_size, shuffle=shuffle)
 
@@ -102,7 +102,7 @@ def sorensen_dice_metric(prediction, target, eps=1e-6):
     numerator = (prediction * target).sum()
     denominator = (prediction * prediction).sum() + (target * target).sum()
 
-    return -2. * (numerator / denominator.clamp(min=eps))
+    return 2. * (numerator / denominator.clamp(min=eps))
 
 def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
     """
@@ -166,14 +166,15 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         for j, data_val in enumerate(valloader, 0):
             raw, gt = data_val
             outputs = net(raw).squeeze(dim=0)
+            outputs = outputs.detach()
             val_accumulated += sorensen_dice_metric(outputs, gt)
 
         print("Validation score after epoch {}: {}".format(epoch, val_accumulated))
+        print("Best validation score: {}".format(best_val))
 
         #save if better than best val score
         if val_accumulated > best_val:
 
-            print("New best validation score: {}".format(val_accumulated))
             print("saving to ", model_folder + "best_model.torch")
 
             best_val = val_accumulated
@@ -191,7 +192,7 @@ if __name__ == "__main__":
     parser.add_argument('--window_size', type=int, default=int(160))
     parser.add_argument('--stride', type=int, default=int(90))
     parser.add_argument('--clear', type=bool, default=False)
-    parser.add_argument('--max_train_epochs', type=int, default=int(15))
+    parser.add_argument('--max_train_epochs', type=int, default=int(167))
     parser.add_argument('--debug', type=bool, default=False)
     parser.add_argument('--process_only', type=bool, default=False)
 

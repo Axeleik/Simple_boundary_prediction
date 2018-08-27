@@ -6,13 +6,14 @@ import torch
 class blocksdataset(Dataset):
     """Face Landmarks dataset."""
 
-    def __init__(self, raw_list, gt_list, transform=None):
+    def __init__(self, raw_list, gt_list, val=False, transform=None):
 
         assert (len(raw_list) == len(gt_list)), "raw and gt lists should be the same!"
 
         self.raw_list = raw_list
         self.gt_list = gt_list
         self.transform = transform
+        self.val = val
 
     def __len__(self):
         return len(self.raw_list)
@@ -32,5 +33,6 @@ class blocksdataset(Dataset):
         if torch.cuda.is_available():
             raw = raw.cuda()
             gt = gt.cuda()
+
 
         return raw.unsqueeze(dim=0), gt

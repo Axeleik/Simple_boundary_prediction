@@ -69,12 +69,12 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
         val_accumulated=0.0
         print("now starting val...")
         for j, data_val in enumerate(valloader, 0):
-            optimizer.zero_grad()
             raw, gt = data_val
             outputs = net(raw).squeeze(dim=0)
+            outputs = outputs.detach()
             val_accumulated += sorensen_dice_metric(outputs, gt)
-            del outputs
-            print("val_accumulated: ", val_accumulated)
+            print("val_acc:  {}".format(val_accumulated))
+
             if j==3:
                 assert (1==2),"stop!"
 

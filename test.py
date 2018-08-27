@@ -32,7 +32,7 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
     if not os.path.exists(model_folder):
         os.mkdir(model_folder)
 
-    print("Start training!")
+    print("Start training with TEST!")
     overall_time=time()
 
     best_val=0
@@ -42,21 +42,34 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
         running_loss = 0.0
 
         for i, data in enumerate(trainloader, 0):
+            time_start=time()
 
             raw, gt = data
 
+            time_load_data=time()
+            print("Time to load data: ",time_load_data-time_start, " secs")
+
             # zero the parameter gradients
             optimizer.zero_grad()
+            time_zero_grad=time()
+            print("Time zero_grad: ",time_zero_grad-time_load_data, " secs")
 
             # forward + backward + optimize
             outputs = net(raw).squeeze(dim=0)
-
-            print("outputs.size(): ", outputs.size())
-            print("gt.size(): ", gt.size())
+            time_outputs=time()
+            print("Time to output: ",time_outputs-time_zero_grad, " secs")
 
             loss = criterion(outputs, gt)
+            time_loss=time()
+            print("Time for loss: ",time_loss-time_outputs, " secs")
+
             loss.backward()
+            time_backward = time()
+            print("Time for backward: ",time_backward-time_loss, " secs")
+
             optimizer.step()
+            time_optimizer_step=time()
+            print("Time for optimizer: ",time_optimizer_step-time_backward, " secs")
 
             # print statistics
             running_loss += loss.item()

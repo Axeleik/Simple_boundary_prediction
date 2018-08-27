@@ -152,7 +152,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             running_loss += loss.item()
 
             if config_dict["debug"]:
-                print("Loss: ",loss.item())
+                print("Loss: ", loss.item())
 
             if (i + 1) % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %

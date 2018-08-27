@@ -14,7 +14,7 @@ def main(config_dict):
 
     print("preparing loaders...")
     trainloader = build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
-    valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], val=True, shuffle=False)
+    valloader = build_loader(raw_val, gt_val, batch_size=config_dict["batch_size_val"], val=True, shuffle=True)
 
     print("preparing Unet3D...")
     U_net3D = load_Unet3D(config_dict)

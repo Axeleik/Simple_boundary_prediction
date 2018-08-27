@@ -141,24 +141,22 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             # forward + backward + optimize
             outputs = net(raw).squeeze(dim=0)
 
-            #print("outputs.size(): ", outputs.size())
-            #print("gt.size(): ", gt.size())
-
             loss = criterion(outputs, gt)
             loss.backward()
             optimizer.step()
 
-            # print statistics
-            running_loss += loss.item()
+            if config_dict["item"]:
 
-            if config_dict["debug"]:
-                print("Loss: ", loss.item())
+                # print statistics
+                running_loss += loss.item()
 
-            if (i + 1) % 100 == 0:
-                print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 100))
-                running_loss = 0.0
-                print("After {} hours".format((time() - overall_time)/3600))
+                if config_dict["debug"]:
+                    print("Loss: ", loss.item())
+
+                if (i + 1) % 100 == 0:
+                    print('[%d, %5d] loss: %.3f' %
+                          (epoch + 1, i + 1, running_loss / 100))
+                    running_loss = 0.0
 
         #validation
         val_accumulated = 0.0
@@ -168,7 +166,11 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             outputs = net(raw).squeeze(dim=0)
             outputs = outputs.detach()
             val_accumulated += sorensen_dice_metric(outputs, gt)
+            if j==49:
+                break
 
+        print("")
+        print("--------------------------------------------------------------------")
         print("Validation score after epoch {}: {}".format(epoch, val_accumulated))
         print("Best validation score: {}".format(best_val))
 
@@ -179,6 +181,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             best_val = val_accumulated
             torch.save(net, model_folder + "best_model.torch")
+
+        print("{} hours passed".format((time() - overall_time) / 3600))
 
     print("saving last model...")
     torch.save(net, model_folder + "last_model.torch")
@@ -211,7 +215,8 @@ if __name__ == "__main__":
         "batch_size_val": 1,
         "max_train_epochs": args.max_train_epochs,
         "debug": args.debug,
-        "process_only": args.process_only}
+        "process_only": args.process_only,
+        "item": False}
 
     print("Starting...")
     print("Working with window_size {}, stride {}, "

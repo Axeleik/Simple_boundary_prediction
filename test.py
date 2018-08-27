@@ -75,6 +75,7 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
             running_loss += loss.item()
 
             print("Loss: ",loss.item())
+            print("time for iteration: ", time()-time_start," secs")
 
             if i==2:
                 break

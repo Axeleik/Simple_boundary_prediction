@@ -134,6 +134,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         time_epoch=time()
 
         for i, data in enumerate(trainloader, 0):
+            if config_dict["debug"]:
+                time_iter = time()
 
             raw, gt = data
 
@@ -146,6 +148,9 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             loss = criterion(outputs, gt)
             loss.backward()
             optimizer.step()
+
+            if config_dict["debug"]:
+                print("iteration {} took {} sec".format(i+1, time() - time_iter))
 
             if config_dict["item"]:
 

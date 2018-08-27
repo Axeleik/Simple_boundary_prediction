@@ -160,7 +160,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
         #validation
         val_accumulated = 0.0
-
+        print("validating...")
         for j, data_val in enumerate(valloader, 0):
             raw, gt = data_val
             outputs = net(raw).squeeze(dim=0)

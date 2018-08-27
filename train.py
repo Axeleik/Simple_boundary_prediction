@@ -123,6 +123,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         os.mkdir(model_folder)
 
     print("Start training!")
+    if config_dict["debug"]:
+        print("With debug!")
     overall_time=time()
 
     best_val=0

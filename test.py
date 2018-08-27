@@ -75,11 +75,12 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
             running_loss += loss.item()
 
             print("Loss: ",loss.item())
+            print("time for loss: ",time()-time_optimizer_step," secs")
             print("time for iteration: ", time()-time_start," secs")
 
-            if i==2:
+            if i==3:
                 break
-
+        break
         val_accumulated=0.0
         print("now starting val...")
         for j, data_val in enumerate(valloader, 0):

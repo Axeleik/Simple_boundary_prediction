@@ -20,7 +20,7 @@ def main(config_dict):
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
-    if config_dict["process_only"] and config_dict["debug"]:
+    if config_dict["debug"]:
         from test import do_one_loop
         do_one_loop(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
@@ -87,7 +87,7 @@ def build_loader(raw, gt, batch_size=1, shuffle=True, val=False):
 
     data = blocksdataset(raw, gt, val=val)
 
-    return DataLoader(data, batch_size=batch_size, shuffle=shuffle)
+    return DataLoader(data, batch_size=batch_size, shuffle=shuffle, num_workers=3)
 
 def sorensen_dice_metric(prediction, target, eps=1e-6):
     """
@@ -123,8 +123,8 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         os.mkdir(model_folder)
 
     print("Start training!")
-    if config_dict["debug"]:
-        print("With debug!")
+    if config_dict["timestop"]:
+        print("With timestop!")
     overall_time=time()
 
     best_val=0
@@ -136,7 +136,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
         time_epoch=time()
 
         #so we record the dataloader time too
-        if config_dict["debug"]:
+        if config_dict["timestop"]:
             time_iter = time()
 
         for i, data in enumerate(trainloader, 0):
@@ -153,7 +153,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
             loss.backward()
             optimizer.step()
 
-            if config_dict["debug"]:
+            if config_dict["timestop"]:
                 print("iteration {} took {} sec".format(i+1, time() - time_iter))
                 time_iter = time()
 
@@ -162,7 +162,7 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
                 # print statistics
                 running_loss += loss.item()
 
-                if config_dict["debug"]:
+                if config_dict["timestop"]:
                     print("Loss: ", loss.item())
 
                 if (i + 1) % 100 == 0:

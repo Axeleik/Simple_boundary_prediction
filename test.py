@@ -24,6 +24,7 @@ def test_model_parameters():
 def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
 
     import torch
+    import gc
     from time import time
     import os
     from train import sorensen_dice_metric
@@ -54,11 +55,14 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
             print("Time to load data: ", time_load_data - time_start, " secs")
 
             if torch.cuda.is_available():
-                raw = raw.cuda()
                 gt = gt.cuda()
+                time_gt = time()
+
+                raw = raw.cuda()
 
             time_cuda=time()
-            print("Time to cuda: ", time_cuda - time_load_data, " secs")
+            print("Time to cuda gt: ", time_gt - time_load_data, " secs")
+            print("Time to cuda raw: ", time_cuda - time_gt , " secs")
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -87,6 +91,16 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             time_delete=time()
             print("time for loss: ",time()-time_optimizer_step," secs")
+
+            if torch.cuda.is_available():
+                #gt = gt.cpu()
+                time_gt = time()
+
+                #raw = raw.cpu()
+                del raw; del gt; gc.collect()
+
+            print("time for cpu gt: ", time_gt-time_delete)
+            print("time for cpu raw: ", time()-time_gt)
 
 
             print("time for iteration: ", time()-time_start," secs")

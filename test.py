@@ -40,19 +40,30 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
     for epoch in range(config_dict["max_train_epochs"]):  # loop over the dataset multiple times
 
         running_loss = 0.0
+        time_start = time()
 
         for i, data in enumerate(trainloader, 0):
-            time_start=time()
 
             raw, gt = data
+            print ("raw.size: {}, raw.dtype: {}".format(raw.size(), raw.dtype))
+            print ("gt.size: {}, gt.dtype: {}".format(gt.size(), gt.dtype))
 
-            time_load_data=time()
-            print("Time to load data: ",time_load_data-time_start, " secs")
+
+            time_load_data = time()
+
+            print("Time to load data: ", time_load_data - time_start, " secs")
+
+            if torch.cuda.is_available():
+                raw = raw.cuda()
+                gt = gt.cuda()
+
+            time_cuda=time()
+            print("Time to cuda: ", time_cuda - time_load_data, " secs")
 
             # zero the parameter gradients
             optimizer.zero_grad()
             time_zero_grad=time()
-            print("Time zero_grad: ",time_zero_grad-time_load_data, " secs")
+            print("Time zero_grad: ",time_zero_grad-time_cuda, " secs")
 
             # forward + backward + optimize
             outputs = net(raw).squeeze(dim=0)
@@ -71,14 +82,19 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
             time_optimizer_step=time()
             print("Time for optimizer: ",time_optimizer_step-time_backward, " secs")
 
-            # print statistics
-            running_loss += loss.item()
+            ## print statistics
+            #running_loss += loss.item()
 
-            print("Loss: ",loss.item())
+            time_delete=time()
             print("time for loss: ",time()-time_optimizer_step," secs")
-            print("time for iteration: ", time()-time_start," secs")
 
-            if i==3:
+
+            print("time for iteration: ", time()-time_start," secs")
+            time_start=time()
+            print("-------------------------------------------")
+
+
+            if i==10:
                 break
         break
         val_accumulated=0.0

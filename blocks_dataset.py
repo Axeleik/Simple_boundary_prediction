@@ -30,9 +30,5 @@ class blocksdataset(Dataset):
             raw = self.transform(raw)
             gt = self.transform(gt)
 
-        if torch.cuda.is_available():
-            raw = raw.cuda()
-            gt = gt.cuda()
-
 
         return raw.unsqueeze(dim=0), gt

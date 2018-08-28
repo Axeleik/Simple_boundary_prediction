@@ -97,7 +97,10 @@ def do_one_loop(config_dict, net, criterion, optimizer, trainloader, valloader):
                 time_gt = time()
 
                 #raw = raw.cpu()
-                del raw; del gt; gc.collect()
+                del raw
+                del gt
+                torch.cuda.empty_cache()
+                gc.collect()
 
             print("time for cpu gt: ", time_gt-time_delete)
             print("time for cpu raw: ", time()-time_gt)

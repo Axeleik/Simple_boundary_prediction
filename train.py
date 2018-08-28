@@ -24,7 +24,7 @@ def main(config_dict):
         from test import do_one_loop
         do_one_loop(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
-    if not config_dict["process_only"]:
+    elif not config_dict["process_only"]:
         train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
 
@@ -143,6 +143,10 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
 
             raw, gt = data
 
+            if torch.cuda.is_available():
+                raw = raw.cuda()
+                gt = gt.cuda()
+
             # zero the parameter gradients
             optimizer.zero_grad()
 
@@ -214,6 +218,7 @@ if __name__ == "__main__":
     parser.add_argument('--max_train_epochs', type=int, default=int(200))
     parser.add_argument('--debug', type=bool, default=False)
     parser.add_argument('--process_only', type=bool, default=False)
+    parser.add_argument('--timestop', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -231,7 +236,8 @@ if __name__ == "__main__":
         "max_train_epochs": args.max_train_epochs,
         "debug": args.debug,
         "process_only": args.process_only,
-        "item": False}
+        "item": False,
+        "timestop": args.timestop}
 
     print("Starting...")
     print("Working with window_size {}, stride {}, "

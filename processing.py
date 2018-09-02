@@ -28,7 +28,7 @@ def load_all_blocks(folder_path):
 
     for file in gt_files:
 
-        block_path=os.path.join(folder_path,file)
+        block_path=os.path.join(folder_path, file)
 
         block_list.append(load_block(block_path))
 
@@ -145,6 +145,8 @@ def load_crop_split_save_raw_gt(config_dict):
 
         assert(len(raw_blocks_all)==len(gt_blocks_all_labeled)), "we need same number of raw and gt blocks"
 
+
+
         print("extracting boundaries from gt")
         gt_blocks_all = list(map(lambda x: extract_boundaries(x), gt_blocks_all_labeled))
 
@@ -165,6 +167,15 @@ def load_crop_split_save_raw_gt(config_dict):
         raw_test = raw_blocks_all[int(len(raw_blocks_all) / 4) * 3:]
         gt_test = gt_blocks_all[int(len(gt_blocks_all) / 4) * 3:]
 
+        if config_dict["debug"]:
+            import h5py
+            debug_folder = os.path.join(config_dict["project_folder"], "debug/")
+            f = h5py.File(debug_folder + "debug.h5", 'w')
+            for idx,data in raw_train:
+                f.create_dataset('raw_train{}'.format(idx), data=data)
+            for idx,data in gt_train:
+                f.create_dataset('gt_train{}'.format(idx), data=data)
+            f.close()
         print("cropping all blocks...")
         cropped_array = [crop_blocks(raw_train, config_dict,
                                      save_path=train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),

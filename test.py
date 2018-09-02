@@ -146,9 +146,24 @@ def load_sample_arrays(path = "/HDD/embl/fib25_blocks/one_array_raw_gt.npy"):
 
     return np.load(path)
 
+def save_to_h5(path_in,folder_out):
+    import numpy as np
+    import h5py
+    gt="/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/train/gt_train_w160_s90.npy"
+    raw="/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/train/raw_train_w160_s90.npy"
+
+    a=np.load(path_in)
+
+    for idx,i in enumerate(a):
+        f=h5py.File(folder_out+"{}.h5".format(idx), 'w')
+        f.create_dataset('data', data=i)
+        f.close()
 
 
 if __name__ == "__main__":
+
+
+    """
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -194,5 +209,5 @@ if __name__ == "__main__":
         loss.backward()
         optimizer.step()
     test_model_parameters()
-
+    """
 

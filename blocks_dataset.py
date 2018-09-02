@@ -30,5 +30,4 @@ class blocksdataset(Dataset):
             raw = self.transform(raw)
             gt = self.transform(gt)
 
-
-        return raw.unsqueeze(dim=0), gt
+        return raw.unsqueeze(dim=0), gt.unsqueeze(dim=0)

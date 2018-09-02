@@ -20,12 +20,17 @@ def main(config_dict):
     U_net3D = load_Unet3D(config_dict)
     criterion, optimizer = get_criterion_and_optimizer(U_net3D, config_dict)
 
-    if config_dict["debug"]:
-        from test import do_one_loop
-        do_one_loop(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+    if not config_dict["process_only"]:
 
-    elif not config_dict["process_only"]:
-        train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+        if config_dict["inferno_train"]:
+            train_net_with_inferno(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+
+        elif config_dict["debug"]:
+            from test import do_one_loop
+            do_one_loop(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
+
+        else:
+            train_net(config_dict, U_net3D, criterion, optimizer, trainloader, valloader)
 
 
 
@@ -102,7 +107,7 @@ def sorensen_dice_metric(prediction, target, eps=1e-6):
     numerator = (prediction * target).sum()
     denominator = (prediction * prediction).sum() + (target * target).sum()
 
-    return 2. * (numerator / denominator.clamp(min=eps))
+    return - 2. * (numerator / denominator.clamp(min=eps))
 
 def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
     """
@@ -208,6 +213,44 @@ def train_net(config_dict, net, criterion, optimizer, trainloader, valloader):
     print('Finished Training')
 
 
+
+
+
+def train_net_with_inferno(config_dict, net, criterion, optimizer, trainloader, valloader):
+    """
+    Trains the NeuralNet with inferno
+    :param config_dict: dict with configs
+    :param net: NeuralNet
+    :param criterion: criterion for NN
+    :param optimizer: optimizer for NN
+    :param trainloader: dataloader with traind ata
+    :param valloader: dataloader with validation data
+    """
+
+    print("Start training with inferno!")
+
+    from inferno.trainers.basic import Trainer
+    from inferno.trainers.callbacks.essentials import SaveAtBestValidationScore
+
+    model_folder = os.path.join(config_dict["project_folder"], "model/")
+    if not os.path.exists(model_folder):
+        os.mkdir(model_folder)
+
+    trainer = Trainer(net) \
+        .save_every((1, 'epochs'), to_directory=model_folder) \
+        .build_criterion(criterion) \
+        .build_optimizer(optimizer) \
+        .build_metric(sorensen_dice_metric) \
+        .evaluate_metric_every('never') \
+        .validate_every((1, 'epochs'), for_num_iterations=50) \
+        .register_callback(SaveAtBestValidationScore(smoothness=.5))
+
+    trainer.set_max_num_epochs(config_dict['max_train_epochs'])
+    trainer.bind_loader('train', trainloader).bind_loader('validate', valloader)
+    trainer.cuda()
+    trainer.fit()
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -219,6 +262,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug', type=bool, default=False)
     parser.add_argument('--process_only', type=bool, default=False)
     parser.add_argument('--timestop', type=bool, default=False)
+    parser.add_argument('--inferno_train', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -237,7 +281,8 @@ if __name__ == "__main__":
         "debug": args.debug,
         "process_only": args.process_only,
         "item": False,
-        "timestop": args.timestop}
+        "timestop": args.timestop,
+        "inferno_train": args.inferno_train}
 
     print("Starting...")
     print("Working with window_size {}, stride {}, "

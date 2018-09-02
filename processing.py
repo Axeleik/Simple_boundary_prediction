@@ -8,6 +8,8 @@ def load_block(path, key="data"):
 
     import h5py
     import numpy as np
+
+    print("loading {}".format(path))
     file = h5py.File(path, 'r')
 
     return np.array(file[key])

@@ -149,9 +149,9 @@ def load_crop_split_save_raw_gt(config_dict):
             debug_folder = os.path.join(config_dict["project_folder"], "debug/")
             f = h5py.File(debug_folder + "debug_before_trafo.h5", 'w')
             for idx,data in enumerate(raw_blocks_all):
-                f.create_dataset('raw_blocks_all{}'.format(idx), data=data)
+                f.create_dataset('raw_blocks_all{}'.format(idx), data=data, compression="gzip")
             for idx,data in enumerate(gt_blocks_all_labeled):
-                f.create_dataset('gt_blocks_all_labeled{}'.format(idx), data=data)
+                f.create_dataset('gt_blocks_all_labeled{}'.format(idx), data=data, compression="gzip")
             f.close()
 
 
@@ -168,9 +168,9 @@ def load_crop_split_save_raw_gt(config_dict):
             debug_folder = os.path.join(config_dict["project_folder"], "debug/")
             f = h5py.File(debug_folder + "debug_after_trafo.h5", 'w')
             for idx,data in enumerate(raw_blocks_all):
-                f.create_dataset('raw_blocks_all{}'.format(idx), data=data)
+                f.create_dataset('raw_blocks_all{}'.format(idx), data=data, compression="gzip")
             for idx,data in enumerate(gt_blocks_all):
-                f.create_dataset('gt_blocks_all{}'.format(idx), data=data)
+                f.create_dataset('gt_blocks_all{}'.format(idx), data=data, compression="gzip")
             f.close()
 
         #if folders do not exist
@@ -194,9 +194,9 @@ def load_crop_split_save_raw_gt(config_dict):
             debug_folder = os.path.join(config_dict["project_folder"], "debug/")
             f = h5py.File(debug_folder + "debug_after_split.h5", 'w')
             for idx,data in enumerate(raw_train):
-                f.create_dataset('raw_train{}'.format(idx), data=data)
+                f.create_dataset('raw_train{}'.format(idx), data=data, compression="gzip")
             for idx,data in enumerate(gt_train):
-                f.create_dataset('gt_train{}'.format(idx), data=data)
+                f.create_dataset('gt_train{}'.format(idx), data=data, compression="gzip")
             f.close()
 
         print("cropping all blocks...")

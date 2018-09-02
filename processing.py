@@ -23,8 +23,8 @@ def load_all_blocks(folder_path):
     """
 
     import os
-
-    gt_files=os.listdir(folder_path)
+    import numpy as np
+    gt_files = np.sort(os.listdir(folder_path))
 
     block_list=[]
 

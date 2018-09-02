@@ -262,7 +262,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug', type=bool, default=False)
     parser.add_argument('--process_only', type=bool, default=False)
     parser.add_argument('--timestop', type=bool, default=False)
-    parser.add_argument('--inferno_train', type=bool, default=False)
+    parser.add_argument('--inferno_train', type=bool, default=True)
 
     args = parser.parse_args()
 

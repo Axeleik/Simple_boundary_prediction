@@ -171,9 +171,9 @@ def load_crop_split_save_raw_gt(config_dict):
             import h5py
             debug_folder = os.path.join(config_dict["project_folder"], "debug/")
             f = h5py.File(debug_folder + "debug.h5", 'w')
-            for idx,data in raw_train:
+            for idx,data in enumerate(raw_train):
                 f.create_dataset('raw_train{}'.format(idx), data=data)
-            for idx,data in gt_train:
+            for idx,data in enumerate(gt_train):
                 f.create_dataset('gt_train{}'.format(idx), data=data)
             f.close()
         print("cropping all blocks...")

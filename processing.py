@@ -143,6 +143,18 @@ def load_crop_split_save_raw_gt(config_dict):
         raw_blocks_all = load_all_blocks(raw_folder_path)
         gt_blocks_all_labeled = load_all_blocks(gt_folder_path)
 
+        if config_dict["debug"]:
+            import h5py
+            print("debugging before trafo")
+            debug_folder = os.path.join(config_dict["project_folder"], "debug/")
+            f = h5py.File(debug_folder + "debug_before_trafo.h5", 'w')
+            for idx,data in enumerate(raw_blocks_all):
+                f.create_dataset('raw_blocks_all{}'.format(idx), data=data)
+            for idx,data in enumerate(gt_blocks_all_labeled):
+                f.create_dataset('gt_blocks_all_labeled{}'.format(idx), data=data)
+            f.close()
+
+
         assert(len(raw_blocks_all)==len(gt_blocks_all_labeled)), "we need same number of raw and gt blocks"
 
 

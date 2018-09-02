@@ -150,6 +150,16 @@ def load_crop_split_save_raw_gt(config_dict):
         print("extracting boundaries from gt")
         gt_blocks_all = list(map(lambda x: extract_boundaries(x), gt_blocks_all_labeled))
 
+        if config_dict["debug"]:
+            import h5py
+            print("debugging before splitting")
+            debug_folder = os.path.join(config_dict["project_folder"], "debug/")
+            f = h5py.File(debug_folder + "debug_after_trafo.h5", 'w')
+            for idx,data in enumerate(raw_blocks_all):
+                f.create_dataset('raw_blocks_all{}'.format(idx), data=data)
+            for idx,data in enumerate(gt_blocks_all):
+                f.create_dataset('gt_blocks_all{}'.format(idx), data=data)
+            f.close()
 
         #if folders do not exist
         if not os.path.exists(train_folder):
@@ -159,7 +169,7 @@ def load_crop_split_save_raw_gt(config_dict):
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
 
-
+        print("splitting...")
         raw_train = raw_blocks_all[:int(len(raw_blocks_all)/2)]
         gt_train = gt_blocks_all[:int(len(gt_blocks_all)/2)]
         raw_val = raw_blocks_all[int(len(raw_blocks_all)/2): int(len(raw_blocks_all)/4)*3]
@@ -170,12 +180,13 @@ def load_crop_split_save_raw_gt(config_dict):
         if config_dict["debug"]:
             import h5py
             debug_folder = os.path.join(config_dict["project_folder"], "debug/")
-            f = h5py.File(debug_folder + "debug.h5", 'w')
+            f = h5py.File(debug_folder + "debug_after_split.h5", 'w')
             for idx,data in enumerate(raw_train):
                 f.create_dataset('raw_train{}'.format(idx), data=data)
             for idx,data in enumerate(gt_train):
                 f.create_dataset('gt_train{}'.format(idx), data=data)
             f.close()
+
         print("cropping all blocks...")
         cropped_array = [crop_blocks(raw_train, config_dict,
                                      save_path=train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]),

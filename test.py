@@ -12,7 +12,7 @@ def main(config_dict):
     _, _, _, _, raw_test, gt_test = processing.load_crop_split_save_raw_gt(config_dict)
 
     print("preparing test loader")
-    testloader = train.build_loader(raw_train, gt_train, batch_size=config_dict["batch_size_train"], shuffle=True)
+    testloader = train.build_loader(raw_test, raw_test, batch_size=config_dict["batch_size_train"], shuffle=True)
 
     print("loading trained model...")
     import torch

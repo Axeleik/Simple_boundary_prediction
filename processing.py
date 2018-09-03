@@ -94,7 +94,7 @@ def crop_blocks(big_blocks_array, config_file, save_path = "../array_small_block
     return np.array(array_small_blocks)
 
 
-def load_crop_split_save_raw_gt(config_dict):
+def load_crop_split_save_raw_gt(config_dict, train=True):
     """
     wrapper for loading, splitting, cropping, saving data
     :param config_dict: configuration dict with all paths and configs
@@ -120,19 +120,25 @@ def load_crop_split_save_raw_gt(config_dict):
 
         print("Cropped blocks already exist, loading...")
 
-        print("loading raw_train...")
-        raw_train = np.load(train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        print("loading gt_train...")
-        gt_train = np.load(train_folder + "gt_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        print("loading raw_val...")
-        raw_val = np.load(val_folder + "raw_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        print("loading gt_val...")
-        gt_val = np.load(val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        print("loading raw_test...")
-        raw_test = np.load(test_folder + "raw_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        print("loading gt_test...")
-        gt_test = np.load(test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
-        return [raw_train, gt_train, raw_val, gt_val, raw_test, gt_test]
+        if train:
+            print("loading raw_train...")
+            raw_train = np.load(train_folder + "raw_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            print("loading gt_train...")
+            gt_train = np.load(train_folder + "gt_train_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            print("loading raw_val...")
+            raw_val = np.load(val_folder + "raw_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            print("loading gt_val...")
+            gt_val = np.load(val_folder + "gt_val_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            return raw_train, gt_train, raw_val, gt_val
+
+        else:
+
+            print("loading raw_test...")
+            raw_test = np.load(test_folder + "raw_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            print("loading gt_test...")
+            gt_test = np.load(test_folder + "gt_test_w{}_s{}.npy".format(config_dict["window_size"], config_dict["stride"]))
+            return raw_test, gt_test
+
 
 
 

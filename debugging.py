@@ -159,20 +159,64 @@ def save_to_h5(path_in,folder_out):
         f.create_dataset('data', data=i)
         f.close()
 
+def look_at_gt():
+    gt_train = np.load("/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/test/gt_test_w160_s90.npy")
+    import h5py
+    for idx, i in enumerate(gt_train):
+        gt=i
+        print("gt.shape: ",gt.shape)
+        gt_file = h5py.File("/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/debug/gt_test_debug_{}.h5".format(idx), 'w')
+        gt_file.create_dataset('gt_{}'.format(idx), data=gt, compression="gzip", compression_opts=9)
+        gt_file.close()
 
-if __name__ == "__main__":
+def look_at_both():
 
-
-    """
     import argparse
-
+    from train import build_loader
     parser = argparse.ArgumentParser()
-    parser.add_argument('--window_size', type=int, default=int(80))
-    parser.add_argument('--stride', type=int, default=int(40))
+    parser.add_argument('--window_size', type=int, default=int(160))
+    parser.add_argument('--stride', type=int, default=int(90))
     parser.add_argument('--clear', type=bool, default=False)
     parser.add_argument('--max_train_epochs', type=int, default=int(15))
 
     args = parser.parse_args()
+    config_dict = {
+        "project_folder": "/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/",
+        "clear": args.clear,
+        "raw_folder": "fib25_blocks/raw/",
+        "gt_folder": "fib25_blocks/gt/",
+        "train_config_folder": "train_config.yml",
+        "window_size": args.window_size,
+        "stride": args.stride,
+        "batch_size_train": 1,
+        "batch_size_val": 1,
+        "max_train_epochs": args.max_train_epochs}
+    import h5py
+    import processing
+    print("preparing data...")
+    raw_test, gt_test= processing.load_crop_split_save_raw_gt(config_dict,False)
+
+    print("preparing loaders...")
+    trainloader = build_loader(raw_test, gt_test, batch_size=config_dict["batch_size_train"], shuffle=True)
+
+    for i, data in enumerate(trainloader, 0):
+
+        raw, gt = data
+        gt=gt.detach().numpy().squeeze()
+        print("gt.shape: ", gt.shape)
+        gt_file = h5py.File(
+            "/net/hci-storage02/userfolders/amatskev/simple_boundary_prediction_project_folder/debug/gt_testloader_debug_{}.h5".format(
+                i), 'w')
+        gt_file.create_dataset('gt_{}'.format(i), data=gt, compression="gzip", compression_opts=9)
+        gt_file.close()
+
+
+
+if __name__ == "__main__":
+    look_at_both()
+
+    """
+
 
 
     config_dict = {
